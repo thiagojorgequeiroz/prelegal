@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #fafaf9;
+  color: #1c1917;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
