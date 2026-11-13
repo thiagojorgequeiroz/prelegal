@@ -3,24 +3,9 @@
 import { useMemo, useState } from "react";
 import { buildNda } from "@/lib/nda/build";
 import { defaultNdaData, type Block, type NdaData } from "@/lib/nda/model";
+import { pdfFileName, toIsoDate } from "@/lib/nda/utils";
 import { NdaForm } from "./NdaForm";
 import { NdaPreview } from "./NdaPreview";
-
-/** Local calendar date as `YYYY-MM-DD`. */
-function today(): string {
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-}
-
-function pdfFileName(data: NdaData): string {
-  const names = data.parties
-    .map((p) => p.company.trim())
-    .filter(Boolean)
-    .join("-");
-  const slug = names.replace(/[^\w-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
-  return `Mutual-NDA${slug ? `-${slug}` : ""}.pdf`;
-}
 
 async function downloadPdf(blocks: Block[], fileName: string) {
   // Loaded on demand: the PDF engine is large and only needed on click.
@@ -43,7 +28,7 @@ async function downloadPdf(blocks: Block[], fileName: string) {
 
 /** Split view: the form on the left, a live preview of the NDA on the right. */
 export function NdaBuilder({ terms }: { terms: Block[] }) {
-  const [data, setData] = useState<NdaData>(() => defaultNdaData(today()));
+  const [data, setData] = useState<NdaData>(() => defaultNdaData(toIsoDate(new Date())));
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
