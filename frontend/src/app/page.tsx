@@ -1,31 +1,21 @@
-import { Suspense } from "react";
-import { NdaBuilder } from "@/components/NdaBuilder";
-import { standardTerms } from "@/lib/nda/terms";
+import type { Metadata } from "next";
+import { LoginForm } from "@/components/LoginForm";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Sign in · Prelegal",
+};
+
+export default function LoginPage() {
   return (
-    <>
-      <header className="flex h-16 shrink-0 items-center justify-between border-b border-stone-200 bg-white px-6">
-        <div className="flex items-baseline gap-3">
-          <span className="font-serif text-xl font-bold text-stone-900">Prelegal</span>
-          <span className="text-sm whitespace-nowrap text-stone-500">Mutual NDA Creator</span>
+    <main className="flex flex-1 items-center justify-center p-6">
+      <div className="w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-stone-200">
+        <div className="h-1.5 bg-accent" />
+        <div className="p-8">
+          <h1 className="font-serif text-3xl font-bold text-navy">Prelegal</h1>
+          <p className="mt-1 mb-6 text-sm text-stone-600">Draft common legal agreements in minutes.</p>
+          <LoginForm />
         </div>
-        <a
-          href="https://commonpaper.com/standards/mutual-nda/1.0"
-          target="_blank"
-          rel="noreferrer"
-          className="hidden text-xs text-stone-500 hover:text-stone-800 sm:block"
-        >
-          Based on Common Paper Mutual NDA v1.0
-        </a>
-      </header>
-      <main className="flex flex-1 flex-col lg:min-h-0">
-        {/* The builder defaults the effective date to the visitor's "today",
-            so it must render per visit rather than at build time. */}
-        <Suspense fallback={<p className="p-6 text-sm text-stone-500">Loading…</p>}>
-          <NdaBuilder terms={standardTerms} />
-        </Suspense>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

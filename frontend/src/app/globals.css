@@ -3,6 +3,11 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
+  --color-accent: #ecad0a;
+  --color-primary: #209dd7;
+  --color-secondary: #753991;
+  --color-navy: #032147;
+  --color-muted: #888888;
 }
 
 :root {

@@ -1,14 +1,16 @@
 # Prelegal frontend
 
 Next.js app for drafting a Common Paper **Mutual Non-Disclosure Agreement**.
-Fill in the form, watch the agreement update live, and download it as a PDF.
+Sign in (a placeholder: any email and password works), fill in the form at
+`/nda/`, watch the agreement update live, and download it as a PDF.
 
 ## Getting started
 
 ```bash
 npm install
 npm run dev      # http://localhost:3000
-npm run build    # production build
+npm run build    # static export into out/, served by the backend
+npm start        # serve out/ locally
 ```
 
 ## Testing
@@ -27,7 +29,7 @@ npm run test:all   # lint + types + unit + e2e
 | PDF | `src/components/NdaPdf.test.tsx` | The real PDF engine renders the full agreement with non-Latin names |
 | End-to-end | `e2e/*.spec.ts` (desktop + mobile) | The production build in Chrome: live preview, real PDF downloads, fonts, timezones, axe accessibility scan, keyboard use, layout, no console errors |
 
-The e2e tests build into `.next-e2e/` and serve on port 3100, so they can run
+The e2e tests export into `.next-e2e/` and serve it on port 3100, so they can run
 while `npm run dev` is up. Locally they use your installed Google Chrome; set
 `PLAYWRIGHT_CHANNEL` to use another browser, or run `npx playwright install chromium`
 and set it to `chromium`. CI (`.github/workflows/frontend.yml`) runs everything

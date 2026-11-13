@@ -70,6 +70,7 @@ node_modules/
 !.yarn/versions
 
 .next/
+.next-e2e/
 out/
 .vercel/
 .turbo/

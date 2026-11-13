@@ -3,16 +3,16 @@ import type { Block, Run } from "@/lib/nda/model";
 function RunView({ run }: { run: Run }) {
   if (run.href) {
     return (
-      <a href={run.href} target="_blank" rel="noreferrer" className="text-blue-700 underline">
+      <a href={run.href} target="_blank" rel="noreferrer" className="text-navy underline decoration-primary">
         {run.text}
       </a>
     );
   }
   if (run.missing) {
-    return <span className="rounded bg-amber-100 px-1 text-amber-800">{run.text}</span>;
+    return <span className="rounded bg-accent/25 px-1 text-navy">{run.text}</span>;
   }
   if (run.filled) {
-    return <span className="rounded bg-sky-50 px-0.5 text-sky-900 whitespace-pre-line">{run.text}</span>;
+    return <span className="rounded bg-primary/10 px-0.5 text-navy whitespace-pre-line">{run.text}</span>;
   }
   return run.bold ? <strong>{run.text}</strong> : <>{run.text}</>;
 }
@@ -24,8 +24,8 @@ function Runs({ runs }: { runs: Run[] }) {
 function BlockView({ block }: { block: Block }) {
   switch (block.kind) {
     case "heading":
-      if (block.level === 1) return <h1 className="mb-6 text-center text-2xl font-bold">{block.text}</h1>;
-      if (block.level === 2) return <h2 className="mt-6 mb-2 text-lg font-bold uppercase">{block.text}</h2>;
+      if (block.level === 1) return <h1 className="mb-6 text-center text-2xl font-bold text-navy">{block.text}</h1>;
+      if (block.level === 2) return <h2 className="mt-6 mb-2 text-lg font-bold text-navy uppercase">{block.text}</h2>;
       return <h3 className="mt-5 mb-1 font-bold">{block.text}</h3>;
     case "paragraph":
       return (
