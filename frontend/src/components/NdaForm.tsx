@@ -3,11 +3,9 @@
 import { useId, type ReactNode } from "react";
 import { pluralizeYears } from "@/lib/nda/build";
 import type { NdaData, Party } from "@/lib/nda/model";
+import { inputClass } from "./styles";
 
 const YEAR_OPTIONS = Array.from({ length: 10 }, (_, i) => i + 1);
-
-const inputClass =
-  "w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm focus:border-sky-600 focus:ring-2 focus:ring-sky-600/20 focus:outline-none";
 
 type ControlProps = { id: string; "aria-describedby"?: string };
 
@@ -33,7 +31,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <fieldset className="space-y-4 border-t border-stone-200 pt-5 first:border-t-0 first:pt-0">
-      <legend className="mb-3 text-xs font-semibold tracking-wider text-stone-500 uppercase">{title}</legend>
+      <legend className="mb-3 text-xs font-semibold tracking-wider text-navy uppercase">{title}</legend>
       {children}
     </fieldset>
   );
@@ -52,7 +50,7 @@ function RadioGroup({ legend, hint, children }: { legend: string; hint?: string;
 function Radio({ name, checked, onChange, children }: { name: string; checked: boolean; onChange: () => void; children: ReactNode }) {
   return (
     <label className="flex items-center gap-2 text-sm text-stone-800">
-      <input type="radio" name={name} checked={checked} onChange={onChange} className="accent-sky-700" />
+      <input type="radio" name={name} checked={checked} onChange={onChange} className="accent-primary" />
       {children}
     </label>
   );

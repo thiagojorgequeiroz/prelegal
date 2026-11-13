@@ -21,9 +21,9 @@ export { expect };
 export const preview = (page: Page) => page.getByRole("article");
 export const party = (page: Page, n: 1 | 2) => page.getByRole("group", { name: `Party ${n}` });
 
-/** Opens the app and waits for the client-rendered builder. */
+/** Opens the NDA builder and waits for it to render on the client. */
 export async function openBuilder(page: Page) {
-  await page.goto("/");
+  await page.goto("/nda/");
   await expect(page.getByRole("heading", { name: "Agreement details" })).toBeVisible();
 }
 

@@ -50,7 +50,7 @@ export function NdaBuilder({ terms }: { terms: Block[] }) {
   return (
     <div className="grid flex-1 lg:min-h-0 lg:grid-cols-[minmax(360px,440px)_1fr] lg:grid-rows-[minmax(0,1fr)]">
       <aside className="border-stone-200 bg-white p-6 lg:overflow-y-auto lg:border-r">
-        <h2 className="mb-1 text-lg font-semibold text-stone-900">Agreement details</h2>
+        <h2 className="mb-1 text-lg font-semibold text-navy">Agreement details</h2>
         <p className="mb-6 text-sm text-stone-600">
           Fill in the details below. The document updates as you type.
         </p>
@@ -60,8 +60,8 @@ export function NdaBuilder({ terms }: { terms: Block[] }) {
       <section className="flex flex-col bg-stone-100 lg:overflow-hidden">
         <div className="flex items-center justify-between gap-4 border-b border-stone-200 bg-stone-50 px-6 py-3">
           <div>
-            <h2 className="text-sm font-semibold text-stone-900">Preview</h2>
-            <p className="text-xs text-stone-500">Highlighted text comes from your answers. Blanks print as lines to fill in.</p>
+            <h2 className="text-sm font-semibold text-navy">Preview</h2>
+            <p className="text-xs text-stone-600">Highlighted text comes from your answers. Blanks print as lines to fill in.</p>
           </div>
           <div className="flex items-center gap-3">
             {error && (
@@ -73,7 +73,7 @@ export function NdaBuilder({ terms }: { terms: Block[] }) {
               type="button"
               onClick={handleDownload}
               disabled={downloading}
-              className="rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold whitespace-nowrap text-white shadow-sm hover:bg-sky-900 disabled:cursor-wait disabled:opacity-60"
+              className="rounded-md bg-secondary px-4 py-2 text-sm font-semibold whitespace-nowrap text-white shadow-sm hover:bg-secondary/90 disabled:cursor-wait disabled:opacity-60"
             >
               {downloading ? "Preparing…" : "Download PDF"}
             </button>

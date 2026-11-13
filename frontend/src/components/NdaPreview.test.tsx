@@ -41,8 +41,8 @@ describe("NdaPreview: block rendering", () => {
 
   it("distinguishes filled values from missing placeholders", () => {
     renderBlocks([{ kind: "paragraph", runs: [{ text: "Delaware", filled: true }, { text: "[Jurisdiction]", missing: true }] }]);
-    expect(screen.getByText("Delaware")).toHaveClass("bg-sky-50");
-    expect(screen.getByText("[Jurisdiction]")).toHaveClass("bg-amber-100");
+    expect(screen.getByText("Delaware")).toHaveClass("bg-primary/10");
+    expect(screen.getByText("[Jurisdiction]")).toHaveClass("bg-accent/25");
   });
 
   it("keeps line breaks in filled values", () => {

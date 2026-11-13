@@ -1,0 +1,15 @@
+.git
+.github
+.claude
+**/node_modules
+**/.venv
+**/__pycache__
+**/.pytest_cache
+frontend/.next
+frontend/.next-e2e
+frontend/out
+frontend/test-results
+frontend/playwright-report
+frontend/tsconfig.tsbuildinfo
+backend/data
+*.db

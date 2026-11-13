@@ -25,8 +25,8 @@ export default defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: `npm run build && npm run start -- --port ${PORT}`,
-    // Separate build folder, so a running `npm run dev` doesn't get in the way.
+    command: `npm run build && npx serve .next-e2e --listen ${PORT} --no-clipboard`,
+    // Separate export folder, so a running `npm run dev` doesn't get in the way.
     env: { NEXT_DIST_DIR: ".next-e2e" },
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCI,
