@@ -8,6 +8,9 @@ A platform for drafting common legal agreements.
 
 Requires Docker. The app is served at http://localhost:8000.
 
+The AI chat needs an Anthropic API key: copy `.env.example` to `.env` and set
+`ANTHROPIC_API_KEY`. Without it the app runs, but the chat reports it is not configured.
+
 | OS      | Start                       | Stop                       |
 |---------|-----------------------------|----------------------------|
 | Mac     | `scripts/start-mac.sh`      | `scripts/stop-mac.sh`      |
@@ -16,6 +19,7 @@ Requires Docker. The app is served at http://localhost:8000.
 
 The SQLite database is temporary: it is recreated every time the app starts.
 Sign-in is a placeholder for now; any email and password lets you in.
+After signing in, chat with the AI assistant to fill in a Mutual NDA, then download it as a PDF.
 
 ## Layout
 

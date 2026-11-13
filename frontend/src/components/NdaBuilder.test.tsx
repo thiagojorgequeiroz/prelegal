@@ -2,8 +2,10 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { defaultNdaData } from "@/lib/nda/model";
 import { standardTerms } from "@/lib/nda/terms";
 import { toIsoDate } from "@/lib/nda/utils";
+import { completedNda, requestBody, stubChat } from "@/test/fixtures";
 import { NdaBuilder } from "./NdaBuilder";
 
 // The real PDF engine is covered by NdaPdf.test.tsx; here we only check the
@@ -24,7 +26,15 @@ vi.mock("./NdaPdf", () => ({
 }));
 
 const preview = () => within(screen.getByRole("article"));
-const party = (n: 1 | 2) => within(screen.getByRole("group", { name: `Party ${n}` }));
+
+/** Renders the builder and sends one chat message. */
+async function renderAndSay(text = "Fill it in") {
+  const user = userEvent.setup();
+  render(<NdaBuilder terms={standardTerms} />);
+  await user.type(screen.getByLabelText("Message"), `${text}{Enter}`);
+  await screen.findByText("Updated.");
+  return user;
+}
 
 let clicked: HTMLAnchorElement[];
 
@@ -41,73 +51,69 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
 describe("NdaBuilder: live preview", () => {
-  it("defaults the effective date to today", () => {
-    render(<NdaBuilder terms={standardTerms} />);
-    expect(screen.getByLabelText("Effective date")).toHaveValue(toIsoDate(new Date()));
+  it("sends today's date as the default effective date", async () => {
+    const fetchMock = stubChat(defaultNdaData(toIsoDate(new Date())));
+    await renderAndSay();
+    expect(requestBody(fetchMock).nda.effectiveDate).toBe(toIsoDate(new Date()));
   });
 
-  it("updates the preview as the user types", async () => {
-    const user = userEvent.setup();
+  it("updates the preview from the AI's answer", async () => {
+    stubChat(completedNda({ effectiveDate: "2027-03-04" }));
     render(<NdaBuilder terms={standardTerms} />);
-
     expect(preview().getByText("[Governing Law]")).toBeInTheDocument();
-    await user.type(screen.getByLabelText("Governing law"), "Delaware");
-    expect(preview().queryByText("[Governing Law]")).not.toBeInTheDocument();
-    expect(preview().getByText("Delaware")).toBeInTheDocument();
 
-    await user.type(party(1).getByLabelText("Company"), "Acme Inc.");
+    await userEvent.type(screen.getByLabelText("Message"), "Fill it in{Enter}");
+
+    expect(await preview().findByText("Delaware")).toBeInTheDocument();
+    expect(preview().queryByText("[Governing Law]")).not.toBeInTheDocument();
     expect(preview().getByRole("row", { name: /Company/ })).toHaveTextContent("Acme Inc.");
+    expect(preview().getByText("March 4, 2027")).toBeInTheDocument();
   });
 
   it("reflects term choices in the preview", async () => {
-    const user = userEvent.setup();
-    render(<NdaBuilder terms={standardTerms} />);
-
-    await user.selectOptions(screen.getByRole("combobox", { name: "MNDA term length" }), "2");
+    stubChat(
+      completedNda({ mndaTerm: { kind: "years", years: 2 } }),
+      completedNda({ mndaTerm: { kind: "untilTerminated" }, confidentialityTerm: { kind: "perpetual" } }),
+    );
+    const user = await renderAndSay("Two years");
     expect(screen.getByRole("article")).toHaveTextContent("Expires 2 years from Effective Date.");
 
-    await user.click(screen.getByRole("radio", { name: "Continues until terminated" }));
+    await user.type(screen.getByLabelText("Message"), "Until terminated, confidential forever{Enter}");
+    await waitFor(() => expect(screen.getByRole("article")).toHaveTextContent("In perpetuity."));
     expect(screen.getByRole("article")).toHaveTextContent("Continues until terminated in accordance with the terms of the MNDA.");
-
-    await user.click(screen.getByRole("radio", { name: "In perpetuity" }));
-    expect(screen.getByRole("article")).toHaveTextContent("In perpetuity.");
   });
 
-  it("formats the chosen effective date in words", async () => {
-    render(<NdaBuilder terms={standardTerms} />);
-    const input = screen.getByLabelText("Effective date");
-    await act(async () => {
-      // Date inputs can't be typed into in jsdom; set the value like a picker would.
-      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "2027-03-04");
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-    });
-    expect(preview().getByText("March 4, 2027")).toBeInTheDocument();
+  it("sends the updated NDA back on the next turn", async () => {
+    const nda = completedNda();
+    const fetchMock = stubChat(nda, nda);
+    const user = await renderAndSay();
+    await user.type(screen.getByLabelText("Message"), "Thanks{Enter}");
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    expect(requestBody(fetchMock, 1).nda).toEqual(nda);
   });
 });
 
 describe("NdaBuilder: PDF download", () => {
   it("downloads a PDF named after the parties", async () => {
-    const user = userEvent.setup();
-    render(<NdaBuilder terms={standardTerms} />);
-    await user.type(party(1).getByLabelText("Company"), "Acme Inc.");
-    await user.type(party(2).getByLabelText("Company"), "Globex");
+    stubChat(completedNda());
+    const user = await renderAndSay();
 
     await user.click(screen.getByRole("button", { name: "Download PDF" }));
 
     await waitFor(() => expect(clicked).toHaveLength(1));
-    expect(clicked[0].download).toBe("Mutual-NDA-Acme-Inc-Globex.pdf");
+    expect(clicked[0].download).toBe("Mutual-NDA-Acme-Inc-Globex-LLC.pdf");
     expect(clicked[0].href).toBe("blob:nda");
     expect(clicked[0].isConnected).toBe(false); // removed after clicking
     expect(pdfMocks.registerPdfFonts).toHaveBeenCalledWith(`${window.location.origin}/fonts`);
   });
 
   it("renders the PDF from the current document", async () => {
-    const user = userEvent.setup();
-    render(<NdaBuilder terms={standardTerms} />);
-    await user.type(screen.getByLabelText("Governing law"), "Delaware");
+    stubChat(completedNda());
+    const user = await renderAndSay();
     await user.click(screen.getByRole("button", { name: "Download PDF" }));
 
     await waitFor(() => expect(pdfMocks.pdf).toHaveBeenCalledTimes(1));
