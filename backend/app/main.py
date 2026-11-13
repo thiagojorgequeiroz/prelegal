@@ -4,13 +4,15 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 
+from app.chat import LLM, ChatError, claude_llm
 from app.db import init_db
+from app.nda import ChatRequest, ChatTurn
 
 
-def create_app(db_path: Path, static_dir: Path) -> FastAPI:
+def create_app(db_path: Path, static_dir: Path, llm: LLM = claude_llm) -> FastAPI:
     """Build the app; the database is reset on startup, the frontend served if built."""
 
     @asynccontextmanager
@@ -23,6 +25,14 @@ def create_app(db_path: Path, static_dir: Path) -> FastAPI:
     @app.get("/api/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    @app.post("/api/chat")
+    def chat(request: ChatRequest) -> ChatTurn:
+        """One chat turn; sync so the blocking SDK call runs in the threadpool."""
+        try:
+            return llm(request.messages, request.nda)
+        except ChatError as err:
+            raise HTTPException(status_code=err.status, detail=err.message) from err
 
     # Mounted last so it never shadows the API routes.
     if static_dir.is_dir():

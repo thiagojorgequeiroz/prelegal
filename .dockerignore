@@ -13,3 +13,5 @@ frontend/playwright-report
 frontend/tsconfig.tsbuildinfo
 backend/data
 *.db
+.env
+.env.*

@@ -16,7 +16,7 @@ test.describe("fake login", () => {
     await page.getByLabel("Password").fill("anything");
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(page).toHaveURL(/\/nda\/$/);
-    await expect(page.getByRole("heading", { name: "Agreement details" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Draft with AI" })).toBeVisible();
   });
 
   test("stays on the sign-in screen when fields are empty", async ({ page }) => {

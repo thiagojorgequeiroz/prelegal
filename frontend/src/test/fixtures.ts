@@ -1,4 +1,20 @@
+import { vi } from "vitest";
 import { defaultNdaData, type Block, type NdaData, type Run } from "@/lib/nda/model";
+
+/** Stubs `fetch` so each `/api/chat` call answers with the next NDA. */
+export function stubChat(...ndas: NdaData[]) {
+  const fetchMock = vi.fn<typeof fetch>();
+  for (const nda of ndas) {
+    fetchMock.mockResolvedValueOnce(Response.json({ reply: "Updated.", nda }));
+  }
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+}
+
+/** The JSON body of the n-th `fetch` call. */
+export function requestBody(fetchMock: ReturnType<typeof vi.fn<typeof fetch>>, n = 0) {
+  return JSON.parse(fetchMock.mock.calls[n][1]!.body as string);
+}
 
 /** A fully completed form, as a user would submit it. */
 export function completedNda(overrides: Partial<NdaData> = {}): NdaData {

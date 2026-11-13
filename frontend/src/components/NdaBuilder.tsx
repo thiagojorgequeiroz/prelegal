@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { buildNda } from "@/lib/nda/build";
 import { defaultNdaData, type Block, type NdaData } from "@/lib/nda/model";
 import { pdfFileName, toIsoDate } from "@/lib/nda/utils";
-import { NdaForm } from "./NdaForm";
+import { ChatPanel } from "./ChatPanel";
 import { NdaPreview } from "./NdaPreview";
 
 async function downloadPdf(blocks: Block[], fileName: string) {
@@ -26,7 +26,7 @@ async function downloadPdf(blocks: Block[], fileName: string) {
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
-/** Split view: the form on the left, a live preview of the NDA on the right. */
+/** Split view: the AI chat on the left, a live preview of the NDA on the right. */
 export function NdaBuilder({ terms }: { terms: Block[] }) {
   const [data, setData] = useState<NdaData>(() => defaultNdaData(toIsoDate(new Date())));
   const [downloading, setDownloading] = useState(false);
@@ -49,12 +49,12 @@ export function NdaBuilder({ terms }: { terms: Block[] }) {
 
   return (
     <div className="grid flex-1 lg:min-h-0 lg:grid-cols-[minmax(360px,440px)_1fr] lg:grid-rows-[minmax(0,1fr)]">
-      <aside className="border-stone-200 bg-white p-6 lg:overflow-y-auto lg:border-r">
-        <h2 className="mb-1 text-lg font-semibold text-navy">Agreement details</h2>
-        <p className="mb-6 text-sm text-stone-600">
-          Fill in the details below. The document updates as you type.
+      <aside className="flex flex-col border-stone-200 bg-white p-6 lg:overflow-hidden lg:border-r">
+        <h2 className="mb-1 text-lg font-semibold text-navy">Draft with AI</h2>
+        <p className="mb-4 text-sm text-stone-600">
+          Tell the assistant about your NDA. The document updates as you chat.
         </p>
-        <NdaForm data={data} onChange={setData} />
+        <ChatPanel data={data} onChange={setData} />
       </aside>
 
       <section className="flex flex-col bg-stone-100 lg:overflow-hidden">
